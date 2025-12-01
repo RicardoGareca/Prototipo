@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studia - Prototipo Mejorado</title>
+    <style>
+        :root {
+            --primary: #1e5faf;
+            --primary-dark: #15427a;
+            --accent-red: #d32f2f;
+            --accent-yellow: #fbc02d;
+            --accent-teal: #00897b;
+            --accent-purple: #7c3aed;
+            --bg-light: #f5f7fa;
+            --text-dark: #333;
+            --text-light: #666;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background-color: var(--bg-light);
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+            border: 8px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px;
+            padding-top: 50px;
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-avatar-mini {
+            width: 35px;
+            height: 35px;
+            background-color: #ddd;
+            border-radius: 50%;
+            background-image: url('https://ui-avatars.com/api/?name=Ana+M&background=0D8ABC&color=fff');
+            background-size: cover;
+            cursor: pointer;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        h2 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-dark); }
+        h3 { font-size: 0.9rem; margin-bottom: 5px; color: var(--text-light); }
+        p { font-size: 0.9rem; color: var(--text-light); }
+
+        /* ===== EMOCIONES CHECK-IN ===== */
+        .emotion-check {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .emotions-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .emotion-btn {
+            aspect-ratio: 1;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emotion-btn:hover, .emotion-btn.selected {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        /* ===== GAMIFICACIÓN ===== */
+        .xp-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            height: 100%;
+            width: 65%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .achievement-badge {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .achievement-locked {
+            opacity: 0.3;
+            background: #ccc;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* ===== ANÁLISIS PREDICTIVO ===== */
+        .risk-alert {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #fff;
+        }
+
+        .projection-card {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* ===== MODO ENFOQUE ===== */
+        .focus-mode-container {
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .pomodoro-timer {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background: rgba(255,255,255,0.3);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .resources-section {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .resource-tag {
+            background: rgba(255,255,255,0.3);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        /* ===== VISTAS ===== */
+        .progress-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(white 75%, rgba(255,255,255,0.2) 0);
+            margin: 0 auto 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-inner {
+            width: 85px;
+            height: 85px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .agenda-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .agenda-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .urgent { border-left-color: var(--accent-red); }
+        .pending { border-left-color: var(--accent-yellow); }
+        .teal { border-left-color: var(--accent-teal); }
+
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 100px;
+            margin-top: 20px;
+        }
+
+        .bar {
+            width: 15px;
+            background-color: var(--accent-teal);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+        }
+
+        .bar.low { background-color: var(--primary); }
+        .bar.mid { background-color: var(--accent-yellow); }
+
+        .bar span {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .msg-left {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-right {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .profile-pic-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-image: url('https://ui-avatars.com/api/?name=Ana+M&background=0D8ABC&color=fff&size=128');
+            background-size: cover;
+            margin: 0 auto 10px auto;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .bottom-nav {
+            height: 70px;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #999;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .hidden { display: none; }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.05);
+            font-weight: bold;
+        }
+
+        .tag.red { color: var(--accent-red); background: #ffebee; }
+        .tag.yellow { color: #f9a825; background: #fffde7; }
+        .tag.teal { color: var(--accent-teal); background: #e0f2f1; }
+
+        .button-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ===== ESTILOS ONBOARDING ===== */
+        .onboarding-step {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .onboarding-step h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .onboarding-step p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .preference-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pref-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .pref-btn:hover, .pref-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-counter {
+            font-size: 0.7rem;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .step-progress {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .step-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 25%;
+            transition: width 0.3s;
+        }
+
+        /* ===== ESTILOS ASIGNATURAS ===== */
+        .subject-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .subject-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .subject-card.math { border-left-color: #ff6b6b; }
+        .subject-card.science { border-left-color: var(--accent-teal); }
+        .subject-card.language { border-left-color: var(--accent-yellow); }
+        .subject-card.history { border-left-color: var(--accent-purple); }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .subject-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .subject-progress {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.05);
+            padding: 3px 8px;
+            border-radius: 10px;
+            color: var(--text-light);
+        }
+
+        .subject-docs {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .doc-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .btn-secondary {
+            padding: 8px 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-dark);
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 15px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(30, 95, 175, 0.05);
+        }
+
+        /* Modal para Modo Enfoque */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 0;
+            border-radius: 20px;
+            width: 375px;
+            height: 812px;
+            max-height: 90vh;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        
+        <div class="header">
+            <div class="brand-logo">
+                <span style="font-size: 1.5rem;">S</span> Studia
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="background: var(--accent-purple); color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: bold;">Lv. 12</span>
+                <div class="user-avatar-mini" onclick="showView('profile')"></div>
+            </div>
+        </div>
+
+        <div id="content-container" class="content">
+
+            <!-- ===== VISTA ONBOARDING ===== -->
+            <div id="view-onboarding">
+                <div class="step-counter">Paso <span id="currentStep">1</span> de 4</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" id="stepProgress"></div>
+                </div>
+
+                <!-- PASO 1: INFORMACIÓN PERSONAL -->
+                <div id="step1" class="onboarding-step">
+                    <h1>👋 Bienvenido a Studia</h1>
+                    <p>Vamos a configurar tu perfil de estudio</p>
+                    
+                    <div class="form-group">
+                        <label>¿Cuál es tu nombre?</label>
+                        <input type="text" id="userName" placeholder="Ej: Ana Martínez" value="Ana">
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Qué nivel estás cursando?</label>
+                        <select id="userLevel">
+                            <option>Educación Media</option>
+                            <option selected>Licenciatura / Universidad</option>
+                            <option>Posgrado</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Cuál es tu carrera/área?</label>
+                        <input type="text" id="userCareer" placeholder="Ej: Ingeniería en Sistemas" value="Ingeniería">
+                    </div>
+
+                    <button class="button-primary" onclick="nextStep()">Siguiente →</button>
+                </div>
+
+                <!-- PASO 2: PREFERENCIAS DE APRENDIZAJE -->
+                <div id="step2" class="onboarding-step hidden">
+                    <h1>🎓 Estilos de Aprendizaje</h1>
+                    <p>¿Cómo aprendes mejor?</p>
+                    
+                    <label style="text-align: left; display: block; margin-bottom: 15px; font-weight: bold;">Selecciona tu estilo preferido:</label>
+                    <div class="preference-buttons">
+                        <button class="pref-btn selected" onclick="selectPref(this, 'visual')">👁️ Visual<br><span style="font-size: 0.7rem;">Videos, esquemas</span></button>
+                        <button class="pref-btn" onclick="selectPref(this, 'auditivo')">👂 Auditivo<br><span style="font-size: 0.7rem;">Explicaciones</span></button>
+                        <button class="pref-btn" onclick="selectPref(this, 'lectura')">📖 Lectura<br><span style="font-size: 0.7rem;">Textos, PDFs</span></button>
+                        <button class="pref-btn" onclick="selectPref(this, 'kinestesico')">🤲 Práctico<br><span style="font-size: 0.7rem;">Ejercicios</span></button>
+                    </div>
+
+                    <label style="text-align: left; display: block; margin-bottom: 10px; font-weight: bold;">¿Cuánto tiempo puedes estudiar diariamente?</label>
+                    <div class="preference-buttons">
+                        <button class="pref-btn" onclick="selectTime(this, '30')">30 min</button>
+                        <button class="pref-btn selected" onclick="selectTime(this, '60')">1-2 horas</button>
+                        <button class="pref-btn" onclick="selectTime(this, '120')">2-3 horas</button>
+                        <button class="pref-btn" onclick="selectTime(this, '180')">3+ horas</button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button style="flex: 1; padding: 10px; background: #ccc; color: #333; border: none; border-radius: 8px; cursor: pointer;" onclick="prevStep()">← Atrás</button>
+                        <button class="button-primary" style="flex: 1; margin-top: 0;" onclick="nextStep()">Siguiente →</button>
+                    </div>
+                </div>
+
+                <!-- PASO 3: ASIGNATURAS INICIALES -->
+                <div id="step3" class="onboarding-step hidden">
+                    <h1>📚 Tus Asignaturas</h1>
+                    <p>Agrega las asignaturas que estás cursando</p>
+                    
+                    <div class="form-group">
+                        <label>Primera asignatura</label>
+                        <input type="text" placeholder="Ej: Cálculo I" value="Cálculo I">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Segunda asignatura</label>
+                        <input type="text" placeholder="Ej: Física General" value="Física">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tercera asignatura (opcional)</label>
+                        <input type="text" placeholder="Ej: Historia">
+                    </div>
+
+                    <p style="font-size: 0.75rem; color: #999; margin: 15px 0;">Luego podrás agregar más asignaturas con documentos específicos</p>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button style="flex: 1; padding: 10px; background: #ccc; color: #333; border: none; border-radius: 8px; cursor: pointer;" onclick="prevStep()">← Atrás</button>
+                        <button class="button-primary" style="flex: 1; margin-top: 0;" onclick="nextStep()">Siguiente →</button>
+                    </div>
+                </div>
+
+                <!-- PASO 4: PLAN DE ESTUDIO GENERADO -->
+                <div id="step4" class="onboarding-step hidden">
+                    <h1>🎯 Plan Generado</h1>
+                    <p>La IA ha creado tu plan personalizado</p>
+                    
+                    <div style="background: linear-gradient(135deg, var(--accent-purple), #7c3aed); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                        <p style="font-size: 0.8rem; opacity: 0.9;">Tu plan de estudio ha sido generado basado en:</p>
+                        <div style="font-size: 0.85rem; margin-top: 15px; text-align: left; display: inline-block;">
+                            <p>✅ Tu estilo de aprendizaje (Visual)</p>
+                            <p>✅ Tiempo disponible: 1-2 horas/día</p>
+                            <p>✅ 3 asignaturas principales</p>
+                            <p>✅ Sesiones de Pomodoro adaptadas</p>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-left: 4px solid var(--accent-teal);">
+                        <strong>📋 Tu primer plan:</strong>
+                        <p style="font-size: 0.75rem; color: #666; margin-top: 8px;">Lunes a Viernes: 2 sesiones de 45 min cada una</p>
+                        <p style="font-size: 0.75rem; color: #666;">Sábado: Revisión y práctica (1 hora)</p>
+                        <p style="font-size: 0.75rem; color: #666; margin-top: 8px;">Domingo: Descanso y planificación de semana</p>
+                    </div>
+
+                    <button class="button-primary" onclick="completeOnboarding()">¡Comenzar! 🚀</button>
+                </div>
+            </div>
+
+            <!-- ===== VISTA INICIO ===== -->
+            <div id="view-home">
+                <h2 style="margin-bottom: 15px;">Hola, Ana 👋</h2>
+
+                <!-- CHECK-IN EMOCIONAL -->
+                <div class="emotion-check">
+                    <strong style="font-size: 0.9rem;">¿Cómo te sientes hoy?</strong>
+                    <div class="emotions-grid">
+                        <button class="emotion-btn" onclick="selectEmotion(this, '😭')">😭</button>
+                        <button class="emotion-btn" onclick="selectEmotion(this, '😔')">😔</button>
+                        <button class="emotion-btn" onclick="selectEmotion(this, '😐')">😐</button>
+                        <button class="emotion-btn" onclick="selectEmotion(this, '😊')">😊</button>
+                        <button class="emotion-btn selected" onclick="selectEmotion(this, '🤩')">🤩</button>
+                    </div>
+                </div>
+
+                <!-- PROGRESO + GAMIFICACIÓN -->
+                <div class="card card-blue" style="text-align: center;">
+                    <h3>Tu Progreso Semanal</h3>
+                    <div class="progress-circle">
+                        <div class="progress-inner">
+                            <span style="font-size: 1.2rem; font-weight: bold;">75%</span>
+                            <span style="font-size: 0.6rem;">Metas</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem;">12/16 Tareas | 15h Estudio</p>
+                    <p style="font-size: 0.75rem; margin-top: 8px; opacity: 0.9;">
+                        <span class="level-badge">⭐ 2,350 XP</span>
+                    </p>
+                    <div class="xp-bar">
+                        <div class="xp-fill"></div>
+                    </div>
+                    <p style="font-size: 0.7rem; margin-top: 5px; opacity: 0.8;">650 XP para el siguiente nivel</p>
+                </div>
+
+                <!-- LOGROS DESBLOQUEADOS -->
+                <h3>🏆 Logros Recientes</h3>
+                <div style="display: flex; flex-wrap: wrap;">
+                    <div class="achievement-badge" title="Racha de 3 días">🔥</div>
+                    <div class="achievement-badge" title="Experto en Matemáticas">📐</div>
+                    <div class="achievement-badge" title="Sesión de 2 horas">⏱️</div>
+                    <div class="achievement-badge achievement-locked" title="Bloqueado: Maestro de Todas">🎓</div>
+                </div>
+
+                <h2 style="margin-top: 20px;">Agenda de Hoy</h2>
+                <div class="agenda-item urgent" onclick="openFocusMode('Examen de Cálculo I', 60)">
+                    <strong>Examen de Cálculo I</strong>
+                    <span class="tag red">10:00 AM | Urgente</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 5px;">📌 Click para activar Modo Enfoque</span>
+                </div>
+                <div class="agenda-item pending" onclick="openFocusMode('Entregar Ensayo Historia', 45)">
+                    <strong>Entregar Ensayo Historia</strong>
+                    <span class="tag yellow">23:59 PM | Pendiente</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 5px;">📌 Click para activar Modo Enfoque</span>
+                </div>
+                
+                <div class="card" style="background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); color: white;">
+                    <strong>IA: Sesión Sugerida (Biología)</strong>
+                    <p style="font-size: 0.8rem;">45 min | Basado en bajo rendimiento reciente</p>
+                </div>
+            </div>
+
+            <!-- ===== VISTA CALENDARIO ===== -->
+            <div id="view-calendar" class="hidden">
+                <h2>Calendario Académico</h2>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong>Diciembre 2025</strong>
+                        <span>Mes | Sem | Día</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem;">
+                        <div style="color:#999">L</div><div style="color:#999">M</div><div style="color:#999">M</div><div style="color:#999">J</div><div style="color:#999">V</div><div style="color:#999">S</div><div style="color:#999">D</div>
+                        
+                        <div style="padding: 5px;">1</div>
+                        <div style="background: var(--primary); color: white; border-radius: 50%; padding: 5px;">2</div>
+                        <div style="padding: 5px;">3</div>
+                        <div style="padding: 5px; background: #ffebee; border-radius: 50%;">4</div>
+                        <div style="padding: 5px;">5</div>
+                        <div style="padding: 5px;">6</div>
+                        <div style="padding: 5px;">7</div>
+                    </div>
+                    <p style="font-size: 0.7rem; color: #999; margin-top: 15px; text-align: center;">
+                        <span style="display: inline-block; margin: 0 8px;">🔵 Hoy</span>
+                        <span style="display: inline-block; margin: 0 8px;">📝 Examen/Prueba</span>
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">+ Agregar Evento</button>
+                    <button style="flex: 1; padding: 10px; background: var(--accent-teal); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">+ Estudiar</button>
+                </div>
+
+                <h3>📝 Pruebas y Exámenes (Lo que DEBES hacer)</h3>
+                <div class="agenda-item urgent">
+                    <strong>Examen de Matemáticas</strong>
+                    <span class="tag red">4 Dic | 09:00 AM</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 3px;">Prueba oficial | 2 horas</span>
+                </div>
+                <div class="agenda-item urgent">
+                    <strong>Evaluación de Física</strong>
+                    <span class="tag red">10 Dic | 14:30 PM</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 3px;">Parcial | 1.5 horas</span>
+                </div>
+
+                <h3>📅 Planificación de Estudio (Lo que PLANEAS estudiar)</h3>
+                <div class="agenda-item teal" onclick="openFocusMode('Sesión: Repaso Derivadas', 60)">
+                    <strong>Sesión: Repaso Derivadas</strong>
+                    <span class="tag teal">2 Dic | 16:30 PM | 60 min</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 3px;">📌 Click para iniciar modo enfoque</span>
+                </div>
+                <div class="agenda-item pending">
+                    <strong>Preparación Examen Química</strong>
+                    <span class="tag yellow">6 Dic | 18:00 PM | 90 min</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 3px;">📌 Click para iniciar modo enfoque</span>
+                </div>
+                <div class="agenda-item teal" onclick="openFocusMode('Revisión: Historia Moderna', 45)">
+                    <strong>Revisión: Historia Moderna</strong>
+                    <span class="tag teal">8 Dic | 19:00 PM | 45 min</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 3px;">📌 Click para iniciar modo enfoque</span>
+                </div>
+            </div>
+
+            <!-- ===== VISTA GRUPOS ===== -->
+            <div id="view-groups" class="hidden">
+                <div class="card card-blue" style="padding: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Cálculo Grupo A</span>
+                    <button style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px;">+ Invitar</button>
+                </div>
+
+                <div class="chat-area" id="chat-messages">
+                    <div class="msg msg-left">
+                        <strong>Ana:</strong> ¡Hola a todos! ¿Cuándo nos reunimos?
+                        <div style="font-size: 0.6rem; text-align: right; opacity: 0.7;">10:00 AM</div>
+                    </div>
+                    <div class="msg msg-left">
+                        <strong>Carlos:</strong> ¿Les parece bien mañana a las 4 PM?
+                        <div style="font-size: 0.6rem; text-align: right; opacity: 0.7;">10:05 AM</div>
+                    </div>
+                    <div class="msg msg-right">
+                        Sí, perfecto. Les comparto el apunte del último tema.
+                        <div style="font-size: 0.6rem; text-align: right; opacity: 0.7;">10:07 AM</div>
+                    </div>
+                    <div class="msg msg-right" style="background: #e0e0e0; color: #333; display: flex; align-items: center; gap: 5px;">
+                        📄 Apunte_Derivadas.pdf
+                    </div>
+                </div>
+
+                <div style="padding: 10px 20px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px;">
+                    <input type="text" placeholder="Escribe un mensaje..." style="flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none;">
+                    <button style="background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">></button>
+                </div>
+            </div>
+
+            <!-- ===== VISTA REPORTES ===== -->
+            <div id="view-reports" class="hidden">
+                <h2>Rendimiento Académico</h2>
+                
+                <div class="card card-blue" style="text-align: center;">
+                    <h3>Promedio General (GPA)</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; margin: 10px 0;">4.2<span style="font-size: 1rem; opacity: 0.8;">/5.0</span></div>
+                    <p style="font-size: 0.8rem;">Tendencia: ↑ +0.1 este semestre</p>
+                </div>
+
+                <!-- ANÁLISIS PREDICTIVO -->
+                <div class="risk-alert">
+                    <strong>⚠️ Riesgo Detectado</strong>
+                    <p style="font-size: 0.8rem; margin-top: 8px;">Probabilidad de reprobar Química si no estudias esta semana: <strong>67%</strong></p>
+                    <p style="font-size: 0.7rem; margin-top: 5px; opacity: 0.9;">Basado en tu historial y promedio actual en la materia.</p>
+                </div>
+
+                <div class="projection-card">
+                    <strong>📈 Proyección Futura</strong>
+                    <p style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;">GPA Proyectado: 4.5/5.0</p>
+                    <p style="font-size: 0.75rem; opacity: 0.9;">Si mantienes el ritmo de estudio actual este semestre</p>
+                </div>
+
+                <h3>Calificaciones por Materia</h3>
+                <div class="card">
+                    <div class="chart-container">
+                        <div class="bar low" style="height: 70%;"><span>Mat</span></div>
+                        <div class="bar mid" style="height: 60%;"><span>His</span></div>
+                        <div class="bar mid" style="height: 50%; background-color: #ff6b6b;"><span>Quí</span></div>
+                        <div class="bar" style="height: 80%;"><span>Ing</span></div>
+                    </div>
+                </div>
+
+                <h3>Análisis y Áreas de Mejora (IA)</h3>
+                <div class="card" style="border-left: 4px solid #d32f2f;">
+                    <strong>❗ Debilidad: Química Orgánica</strong>
+                    <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">Necesitas repasar: Nomenclatura y Reacciones de Sustitución.</p>
+                    <button class="button-primary" style="margin-top: 10px;">Ver recursos sugeridos ></button>
+                </div>
+            </div>
+
+            <!-- ===== VISTA ASIGNATURAS/RAMOS ===== -->
+            <div id="view-subjects" class="hidden">
+                <h2>Mis Asignaturas 📚</h2>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem;" onclick="openAddSubjectModal()">+ Nueva Asignatura</button>
+                    <button style="flex: 1; padding: 10px; background: var(--accent-teal); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem;" onclick="openGeneratePlanModal()">🤖 Generar Plan</button>
+                </div>
+
+                <h3 style="margin-top: 20px;">Asignaturas Activas</h3>
+                
+                <div class="subject-card math" onclick="openSubjectDetail('Cálculo I')">
+                    <div class="subject-header">
+                        <div class="subject-title">📐 Cálculo I</div>
+                        <div class="subject-progress">Promedio: 4.0</div>
+                    </div>
+                    <div class="subject-docs">
+                        <span class="doc-badge">📄 Apuntes_Derivadas.pdf</span>
+                        <span class="doc-badge">🎥 Conceptos_Básicos.mp4</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 8px;">3 documentos • Examen: 15 Dic</p>
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openFocusMode('Sesión: Cálculo I', 60)">📌 Estudiar Ahora</button>
+                </div>
+
+                <div class="subject-card science" onclick="openSubjectDetail('Física')">
+                    <div class="subject-header">
+                        <div class="subject-title">⚛️ Física General</div>
+                        <div class="subject-progress">Promedio: 3.8</div>
+                    </div>
+                    <div class="subject-docs">
+                        <span class="doc-badge">📄 Mecánica_Clásica.pdf</span>
+                        <span class="doc-badge">📝 Ejercicios_Resueltos.docx</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 8px;">2 documentos • Examen: 20 Dic</p>
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openFocusMode('Sesión: Física General', 60)">📌 Estudiar Ahora</button>
+                </div>
+
+                <div class="subject-card language" onclick="openSubjectDetail('Historia')">
+                    <div class="subject-header">
+                        <div class="subject-title">📖 Historia Moderna</div>
+                        <div class="subject-progress">Promedio: 4.2</div>
+                    </div>
+                    <div class="subject-docs">
+                        <span class="doc-badge">📄 Renacimiento.pdf</span>
+                        <span class="doc-badge">🎥 Documental_Edad_Media.mp4</span>
+                        <span class="doc-badge">📝 Timeline.xlsx</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 8px;">3 documentos • Examen: 18 Dic</p>
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openFocusMode('Sesión: Historia Moderna', 45)">📌 Estudiar Ahora</button>
+                </div>
+
+                <div class="subject-card history" onclick="openSubjectDetail('Química')">
+                    <div class="subject-header">
+                        <div class="subject-title">🧪 Química Orgánica</div>
+                        <div class="subject-progress">Promedio: 3.2 ⚠️</div>
+                    </div>
+                    <div class="subject-docs">
+                        <span class="doc-badge">📄 Nomenclatura.pdf</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 8px;">1 documento • Examen: 22 Dic</p>
+                    <p style="font-size: 0.75rem; color: #d32f2f; margin-top: 5px;">💡 Necesitas estudiar más - Carga más documentos</p>
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openFocusMode('Sesión: Química Orgánica', 90)">📌 Estudiar Ahora</button>
+                </div>
+            </div>
+
+            <!-- ===== VISTA PERFIL ===== -->
+            <div id="view-profile" class="hidden">
+                <div class="card card-blue">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="profile-pic-large"></div>
+                        <div>
+                            <h2 style="color: white; margin: 0;">Ana Martínez</h2>
+                            <p style="font-size: 0.8rem; opacity: 0.9;">Estudiante de Ingeniería</p>
+                            <button style="background: white; color: var(--primary); border: none; padding: 4px 10px; border-radius: 15px; font-size: 0.7rem; margin-top: 5px;">Editar Perfil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Estadísticas</h3>
+                <div class="card">
+                    <div class="setting-row"><span>Racha Actual</span> <span style="font-weight: bold;">🔥 3 días</span></div>
+                    <div class="setting-row"><span>Total XP</span> <span style="font-weight: bold;">2,350</span></div>
+                    <div class="setting-row" style="border: none;"><span>Sesiones Completadas</span> <span style="font-weight: bold;">42</span></div>
+                </div>
+
+                <h3>Cuenta</h3>
+                <div class="card">
+                    <div class="setting-row"><span>Correo Electrónico</span> <span>></span></div>
+                    <div class="setting-row"><span>Cambiar Contraseña</span> <span>></span></div>
+                    <div class="setting-row" style="border: none;"><span>Notificaciones</span> <span>></span></div>
+                </div>
+
+                <h3>Personalización</h3>
+                <div class="card">
+                    <div class="setting-row"><span>Tema (Claro/Oscuro)</span> <span style="color: var(--primary);">ON</span></div>
+                    <div class="setting-row" style="border: none;"><span>Estilo de Aprendizaje</span> <span>Visual >></span></div>
+                </div>
+                
+                <button style="width: 100%; padding: 15px; background: var(--accent-purple); color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;" onclick="resetOnboarding()">🔄 Reiniciar Configuración</button>
+                
+                <button style="width: 100%; padding: 15px; background: #d32f2f; color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;">Cerrar Sesión</button>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showView('home')">
+                <div class="nav-icon">🏠</div>
+                <span>Inicio</span>
+            </div>
+            <div class="nav-item" onclick="showView('subjects')">
+                <div class="nav-icon">📚</div>
+                <span>Ramos</span>
+            </div>
+            <div class="nav-item" onclick="showView('calendar')">
+                <div class="nav-icon">📅</div>
+                <span>Agenda</span>
+            </div>
+            <div class="nav-item" onclick="showView('reports')">
+                <div class="nav-icon">📊</div>
+                <span>Reportes</span>
+            </div>
+            <div class="nav-item" onclick="showView('profile')">
+                <div class="nav-icon">👤</div>
+                <span>Perfil</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL MODO ENFOQUE -->
+    <div id="focusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; font-size: 1.1rem;" id="focusTaskName">Tarea</h2>
+                <button class="close-btn" onclick="closeFocusMode()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="focus-mode-container" style="margin: 0 -20px 15px -20px; border-radius: 0; padding-bottom: 30px;">
+                    <p style="font-size: 0.9rem; margin-bottom: 10px;">⏱️ TEMPORIZADOR POMODORO</p>
+                    <div class="pomodoro-timer" id="pomodoroDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="btn-primary" onclick="startTimer()">▶ Iniciar</button>
+                        <button class="btn-primary" onclick="pauseTimer()">⏸ Pausa</button>
+                        <button class="btn-primary" onclick="resetTimer()">⟲ Reiniciar</button>
+                    </div>
+                    <div class="resources-section">
+                        <p style="font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">Duración sugerida: <span id="focusTaskDuration">25</span> minutos</p>
+                        <p style="font-size: 0.7rem; opacity: 0.9;">Estudia sin distracciones. Todos los recursos están aquí.</p>
+                    </div>
+                </div>
+
+                <h3>📚 Recursos Personalizados</h3>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Seleccionados según tu estilo de aprendizaje (Visual)</p>
+
+                <div class="card" style="padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 0.9rem;">📹 Video Resumen</strong>
+                            <p style="font-size: 0.75rem; color: #999; margin-top: 3px;">Khan Academy - 5 min</p>
+                        </div>
+                        <span class="resource-tag">Video</span>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 0.9rem;">📊 Esquema Interactivo</strong>
+                            <p style="font-size: 0.75rem; color: #999; margin-top: 3px;">Conceptos clave - 10 min</p>
+                        </div>
+                        <span class="resource-tag" style="background: #e0f2f1; color: var(--accent-teal);">Esquema</span>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 0.9rem;">📝 PDF de Apuntes</strong>
+                            <p style="font-size: 0.75rem; color: #999; margin-top: 3px;">Completo - 15 min</p>
+                        </div>
+                        <span class="resource-tag" style="background: #fff3cd; color: #856404;">PDF</span>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 0.9rem;">❓ Preguntas Tipo Examen</strong>
+                            <p style="font-size: 0.75rem; color: #999; margin-top: 3px;">Práctica - 10 min</p>
+                        </div>
+                        <span class="resource-tag" style="background: #f3e5f5; color: var(--accent-purple);">Práctica</span>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.7rem; color: #999; margin-top: 15px; text-align: center;">💡 IA recomendó estos recursos porque aprendes mejor con contenido visual y esquemas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval = null;
+        let timeLeft = 25 * 60;
+
+        function showView(viewName) {
+            const views = ['home', 'onboarding', 'subjects', 'calendar', 'groups', 'reports', 'profile'];
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if (el) el.classList.add('hidden');
+            });
+
+            const el = document.getElementById('view-' + viewName);
+            if (el) el.classList.remove('hidden');
+
+            if (viewName !== 'onboarding') {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => item.classList.remove('active'));
+                
+                const indexMap = { 'home': 0, 'subjects': 1, 'calendar': 2, 'reports': 3, 'profile': 4 };
+                if (navItems[indexMap[viewName]]) {
+                    navItems[indexMap[viewName]].classList.add('active');
+                }
+            }
+        }
+
+        // ===== ONBOARDING =====
+        let currentStepNum = 1;
+        let selectedPreferences = { learning: 'visual', time: '60' };
+
+        function nextStep() {
+            document.getElementById('step' + currentStepNum).classList.add('hidden');
+            currentStepNum++;
+            document.getElementById('step' + currentStepNum).classList.remove('hidden');
+            document.getElementById('currentStep').textContent = currentStepNum;
+            updateProgressBar();
+        }
+
+        function prevStep() {
+            document.getElementById('step' + currentStepNum).classList.add('hidden');
+            currentStepNum--;
+            document.getElementById('step' + currentStepNum).classList.remove('hidden');
+            document.getElementById('currentStep').textContent = currentStepNum;
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const progress = (currentStepNum / 4) * 100;
+            document.getElementById('stepProgress').style.width = progress + '%';
+        }
+
+        function selectPref(btn, pref) {
+            btn.parentElement.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedPreferences.learning = pref;
+        }
+
+        function selectTime(btn, time) {
+            btn.parentElement.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedPreferences.time = time;
+        }
+
+        function completeOnboarding() {
+            alert('✅ Perfil configurado!\nEstilo: ' + selectedPreferences.learning + '\nTiempo: ' + selectedPreferences.time + ' min');
+            localStorage.setItem('onboarding_completed', 'true');
+            showView('home');
+        }
+
+        function resetOnboarding() {
+            if (confirm('¿Deseas reiniciar la configuración inicial?\n\nEsto mostrará nuevamente el onboarding.')) {
+                localStorage.removeItem('onboarding_completed');
+                currentStepNum = 1;
+                selectedPreferences = { learning: 'visual', time: '60' };
+                document.getElementById('currentStep').textContent = '1';
+                document.getElementById('stepProgress').style.width = '25%';
+                
+                // Ocultar todos los pasos
+                for (let i = 1; i <= 4; i++) {
+                    document.getElementById('step' + i).classList.add('hidden');
+                }
+                // Mostrar paso 1
+                document.getElementById('step1').classList.remove('hidden');
+                
+                showView('onboarding');
+                alert('✅ Onboarding reiniciado. Comienza de nuevo desde el inicio.');
+            }
+        }
+
+        function openAddSubjectModal() {
+            alert('Funcionalidad: Agregar nueva asignatura con documentos (PDF, videos, etc.)');
+        }
+
+        function openGeneratePlanModal() {
+            alert('🤖 IA está analizando tus asignaturas y documentos...\n\nPlan generado basado en:\n- Tus documentos cargados\n- Estilos de aprendizaje\n- Tiempo disponible\n- Fechas de exámenes');
+        }
+
+        function openSubjectDetail(subjectName) {
+            alert('Detalle: ' + subjectName + '\n\nAquí podrías:\n- Ver documentos\n- Revisar progreso\n- Cargar nuevos archivos\n- Ver sesiones recomendadas');
+        }
+
+        function selectEmotion(btn, emoji) {
+            document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            console.log('Emoción seleccionada:', emoji);
+        }
+
+        function openFocusMode(taskName, duration) {
+            document.getElementById('focusModal').classList.add('show');
+            document.getElementById('focusTaskName').textContent = taskName;
+            document.getElementById('focusTaskDuration').textContent = duration;
+            timeLeft = duration * 60;
+            updateTimerDisplay();
+        }
+
+        function closeFocusMode() {
+            document.getElementById('focusModal').classList.remove('show');
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    alert('🎉 ¡Sesión completada! +50 XP ganados');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = parseInt(document.getElementById('focusTaskDuration').textContent) * 60;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('pomodoroDisplay').textContent = 
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('focusModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFocusMode();
+            }
+        });
+
+        // Inicializar app - Mostrar onboarding o home
+        window.addEventListener('load', function() {
+            const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+            if (!hasCompletedOnboarding) {
+                showView('onboarding');
+            } else {
+                showView('home');
+            }
+        });
+
+        // Marcar onboarding como completado
+        const originalCompleteOnboarding = completeOnboarding;
+        completeOnboarding = function() {
+            localStorage.setItem('onboarding_completed', 'true');
+            originalCompleteOnboarding();
+        };
+    </script>
+</body>
+</html>
